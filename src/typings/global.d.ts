@@ -6,5 +6,7 @@ declare global {
     revealed: boolean
     meta?: CellMeta
   }
+
+  type Cords = [number, number]
 }
 export {}

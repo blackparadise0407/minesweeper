@@ -1,12 +1,14 @@
-const neighbours = [
+import { produce } from 'immer'
+
+export const neighbours = [
   [0, 1],
+  [1, -1],
+  [0, -1],
+  [-1, -1],
+  [-1, 0],
+  [-1, 1],
   [1, 0],
   [1, 1],
-  [0, -1],
-  [-1, 0],
-  [1, -1],
-  [-1, 1],
-  [-1, -1],
 ]
 
 export const generateBoard = (
@@ -18,7 +20,7 @@ export const generateBoard = (
 
   let _mines = 0
 
-  const ratio = (width * height) / mines
+  const ratio = (mines * 100) / (width * height)
 
   const minesCord = []
 
@@ -53,4 +55,25 @@ export const generateBoard = (
   })
 
   return result
+}
+
+export const exploreBoard = (cords: Cords, board: Array<Array<Cell>>) => {
+  const [x, y] = cords
+  if (board[x][y].value === -1) {
+    return
+  }
+  if (board[x][y].value > 0) {
+    return produce(board, (draft) => {
+      draft[x][y].revealed = true
+    })
+  }
+
+  return produce(board, (draft) => {
+    const stack = []
+    neighbours.forEach(([nX, nY]) => {
+      if (typeof draft?.[nX + x][nY + y] !== undefined) {
+        draft[nX + x][nY + y].revealed = true
+      }
+    })
+  })
 }

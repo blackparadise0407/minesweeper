@@ -18,7 +18,7 @@ const GameContext = createContext<GameContext>({
 
 export const GameProvider = ({ children }: GameProviderProps) => {
   const [board, setBoard] = useState<GameContext['board']>(() =>
-    generateBoard(15, 15, 20),
+    generateBoard(10, 10, 10),
   )
 
   useEffect(() => {

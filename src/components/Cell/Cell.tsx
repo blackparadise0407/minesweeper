@@ -5,12 +5,12 @@ import { BsQuestion } from 'react-icons/bs'
 import { HiFlag } from 'react-icons/hi'
 
 export interface CellClickFn<TData> {
-  (cords: [number, number, TData]): void
+  (data: [...Cords, TData]): void
 }
 
 interface CellProps {
   cell: Cell
-  cords: [number, number]
+  cords: Cords
   onReveal?: CellClickFn<number>
   onChangeMeta?: CellClickFn<CellMeta>
 }
@@ -54,7 +54,7 @@ const renderCellMeta = (meta: CellMeta) => {
   }
 }
 
-const shouldBeLighter = (cords: [number, number]) => {
+const shouldBeLighter = (cords: Cords) => {
   const [x, y] = cords
   if (x % 2 === 0 && y % 2 !== 0) {
     return true
