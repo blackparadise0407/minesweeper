@@ -2,7 +2,7 @@ import { produce } from 'immer'
 import { memo, useCallback } from 'react'
 
 import { useGameContext } from '@/contexts/GameContext'
-import { exploreBoard, neighbours } from '@/helpers'
+import { neighbours } from '@/helpers'
 
 import { Cell } from '../Cell'
 import { CellClickFn } from '../Cell/Cell'
@@ -15,44 +15,41 @@ export default memo(function Board({ board }: BoardProps) {
   const { board: boardCtx, setBoard } = useGameContext()
 
   const handleRevealCell: CellClickFn<number> = useCallback(([x, y, value]) => {
-    // if (value === -1) {
-    //   alert('You lose')
-    // }
-    // exploreBoard([x, y], boardCtx)
+    if (value === -1) {
+      setBoard(
+        produce((draft) => {
+          draft[x][y].revealed = true
+        }),
+      )
+      alert('Loser!')
+      return
+    }
+
     setBoard(
       produce((draft) => {
-        // draft[x][y].revealed = true
-
-        if (draft[x][y].value === -1) {
-          return
-        }
-        if (draft[x][y].value > 0) {
+        if (draft[x][y].value !== 0) {
           draft[x][y].revealed = true
           return
         }
 
-        const visited: Array<Cords> = []
-        visited.push([x, y])
+        const queue: Array<Cords> = []
+        queue.push([x, y])
         draft[x][y].revealed = true
 
-        while (visited.length) {
-          const [vX, vY] = visited.pop()!
-          for (const [nX, nY] of neighbours) {
-            if (
-              typeof draft?.[nX + vX]?.[nY + vY] !== 'undefined' &&
-              draft[nX + vX][nY + vY].value !== -1
-            ) {
+        while (queue.length) {
+          const [qX, qY] = queue[0]
+          queue.shift()
+          neighbours.forEach(([nX, nY]) => {
+            if (typeof draft?.[nX + qX]?.[nY + qY] !== 'undefined') {
               if (
-                draft[nX + vX][nY + vY].value === 0 &&
-                visited.findIndex(
-                  ([fX, fY]) => fX === nX + vX && fY === nY + vY,
-                ) === -1
+                draft[nX + qX][nY + qY].value === 0 &&
+                !draft[nX + qX][nY + qY].revealed === true
               ) {
-                visited.push([nX + vX, nY + vY])
+                queue.push([nX + qX, nY + qY])
               }
-              draft[nX + vX][nY + vY].revealed = true
+              draft[nX + qX][nY + qY].revealed = true
             }
-          }
+          })
         }
       }),
     )

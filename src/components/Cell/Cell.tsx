@@ -98,14 +98,14 @@ export default memo(function Cell({
         }
       }}
     >
-      {!cell.revealed && (
+      {cell.revealed && (
         <span className={clsx('font-bold', getCellColorClsx(cell.value))}>
           {renderCell(cell.value)}
         </span>
       )}
-      {/* {!cell.revealed && (
+      {!cell.revealed && (
         <span className="text-xl">{renderCellMeta(cell.meta)}</span>
-      )} */}
+      )}
     </div>
   )
 })
