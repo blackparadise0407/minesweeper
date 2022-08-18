@@ -4,6 +4,8 @@ import { BiBomb } from 'react-icons/bi'
 import { BsQuestion } from 'react-icons/bs'
 import { HiFlag } from 'react-icons/hi'
 
+import { useGameContext } from '@/contexts/GameContext'
+
 export interface CellClickFn<TData> {
   (data: [...Cords, TData]): void
 }
@@ -70,10 +72,10 @@ const rotations: CellMeta[] = [undefined, 'mine', 'unsure']
 export default memo(function Cell({
   cell,
   cords,
-  onReveal = () => {},
   onChangeMeta = () => {},
 }: CellProps) {
-  const [x, y] = cords
+  const { onCellReveal } = useGameContext()
+
   const onRightClick = (currentMeta: CellMeta) => {
     const foundIdx = rotations.indexOf(currentMeta)
     if (foundIdx > -1) {
@@ -85,8 +87,8 @@ export default memo(function Cell({
   return (
     <div
       className={clsx(
-        'grid place-content-center outline outline-1 outline-gray-500 cursor-pointer transition-colors',
-        !cell.revealed && 'bg-gray-200 hover:bg-gray-300',
+        'grid place-content-center outline-gray-500 cursor-pointer transition-colors',
+        !cell.revealed && 'bg-gray-200 hover:bg-gray-50',
       )}
       onContextMenu={(e) => {
         e.preventDefault()
@@ -94,10 +96,11 @@ export default memo(function Cell({
       }}
       onClick={() => {
         if (!cell.revealed) {
-          onReveal([...cords, cell.value])
+          onCellReveal([...cords, cell.value])
         }
       }}
     >
+      {/* <div className="absolute">{cell.value}</div> */}
       {cell.revealed && (
         <span className={clsx('font-bold', getCellColorClsx(cell.value))}>
           {renderCell(cell.value)}

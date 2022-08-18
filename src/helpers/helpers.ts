@@ -15,26 +15,26 @@ export const generateBoard = (
   width: number,
   height: number,
   mines: number,
-): Array<Array<Cell>> => {
+): { board: Array<Array<Cell>>; minesCords: Array<Array<number>> } => {
   const result: Array<Array<Cell>> = []
 
   let _mines = 0
 
   const ratio = (mines * 100) / (width * height)
 
-  const minesCord = []
+  const minesCords: Array<Array<number>> = []
 
   for (let row = 0; row < width; row++) {
     result[row] = []
     for (let col = 0; col < height; col++) {
       const val = Math.random() * 100
-      if (val < ratio && _mines <= mines) {
+      if (val < ratio && _mines < mines) {
         result[row][col] = {
           revealed: false,
           value: -1,
         }
         _mines += 1
-        minesCord.push([row, col])
+        minesCords.push([row, col])
       } else
         result[row][col] = {
           revealed: false,
@@ -43,7 +43,7 @@ export const generateBoard = (
     }
   }
 
-  minesCord.forEach(([mX, mY]) => {
+  minesCords.forEach(([mX, mY]) => {
     neighbours.forEach(([nX, nY]) => {
       if (
         typeof result?.[mX + nX]?.[mY + nY] !== 'undefined' &&
@@ -54,7 +54,10 @@ export const generateBoard = (
     })
   })
 
-  return result
+  return {
+    board: result,
+    minesCords,
+  }
 }
 
 export const exploreBoard = (cords: Cords, board: Array<Array<Cell>>) => {
