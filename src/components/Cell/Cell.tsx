@@ -67,6 +67,17 @@ const shouldBeLighter = (cords: Cords) => {
   return false
 }
 
+const getCellBg = (cell: Cell, cords: Cords) => {
+  const isLighter = shouldBeLighter(cords)
+  if (!cell.revealed) {
+    return isLighter
+      ? 'bg-green-400 hover:bg-green-300'
+      : 'bg-green-500 hover:bg-green-300'
+  } else {
+    return isLighter ? 'bg-amber-100' : 'bg-amber-200'
+  }
+}
+
 const rotations: CellMeta[] = [undefined, 'mine', 'unsure']
 
 export default memo(function Cell({
@@ -87,8 +98,8 @@ export default memo(function Cell({
   return (
     <div
       className={clsx(
-        'grid place-content-center outline-gray-500 cursor-pointer transition-colors',
-        !cell.revealed && 'bg-gray-200 hover:bg-gray-50',
+        'grid place-content-center outline-gray-500 cursor-default transition-colors',
+        getCellBg(cell, cords),
       )}
       onContextMenu={(e) => {
         e.preventDefault()
@@ -100,7 +111,6 @@ export default memo(function Cell({
         }
       }}
     >
-      {/* <div className="absolute">{cell.value}</div> */}
       {cell.revealed && (
         <span className={clsx('font-bold', getCellColorClsx(cell.value))}>
           {renderCell(cell.value)}
