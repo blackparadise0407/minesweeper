@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import React, { memo } from 'react'
-import { BiBomb } from 'react-icons/bi'
-import { BsQuestion } from 'react-icons/bs'
+import { FaBomb } from 'react-icons/fa'
 import { HiFlag } from 'react-icons/hi'
 
 import { useGameContext } from '@/contexts/GameContext'
@@ -19,7 +18,7 @@ interface CellProps {
 
 const renderCell = (value: number): React.ReactNode => {
   if (value === -1) {
-    return <BiBomb />
+    return <FaBomb className="text-red-500" />
   } else if (value === 0) {
     return ''
   } else {
@@ -49,8 +48,6 @@ const renderCellMeta = (meta: CellMeta) => {
   switch (meta) {
     case 'mine':
       return <HiFlag className="text-red-500" />
-    case 'unsure':
-      return <BsQuestion className="text-black" />
     default:
       return null
   }
@@ -78,7 +75,7 @@ const getCellBg = (cell: Cell, cords: Cords) => {
   }
 }
 
-const rotations: CellMeta[] = [undefined, 'mine', 'unsure']
+const rotations: CellMeta[] = [undefined, 'mine']
 
 export default memo(function Cell({
   cell,

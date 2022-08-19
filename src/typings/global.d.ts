@@ -1,5 +1,5 @@
 declare global {
-  type CellMeta = 'mine' | 'unsure' | undefined
+  type CellMeta = 'mine' | undefined
 
   interface Cell<T = number> {
     value: T

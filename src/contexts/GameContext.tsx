@@ -7,16 +7,29 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { useSound } from 'use-sound'
 
+import click1Sfx from '@/assets/sounds/click-1.wav?url'
+import click2Sfx from '@/assets/sounds/click-2.wav?url'
+import click3Sfx from '@/assets/sounds/click-3.wav?url'
+import click4Sfx from '@/assets/sounds/click-4.wav?url'
+import click5Sfx from '@/assets/sounds/click-5.wav?url'
+import clickSfx from '@/assets/sounds/click.wav?url'
+import flagFlapSfx from '@/assets/sounds/flag-flap.mp3?url'
+import loseSfx from '@/assets/sounds/lose.wav?url'
+import positiveClickSfx from '@/assets/sounds/positive-click.wav?url'
 import { CellClickFn } from '@/components/Cell/Cell'
 import { generateBoard, neighbours } from '@/helpers'
 
+export const HIGHSCORE_KEY = 'minesweeper_highscore'
 interface GameContext {
   timer: number
   gameStart: boolean
   gameOver: boolean
   flagsCount: number
   board: Array<Array<Cell>>
+  onRestart: () => void
+  onCellChangeMeta: CellClickFn<CellMeta>
   onCellReveal: CellClickFn<number>
   setBoard: React.Dispatch<React.SetStateAction<GameContext['board']>>
 }
@@ -32,7 +45,9 @@ const GameContext = createContext<GameContext>({
   gameStart: false,
   flagsCount: 0,
   onCellReveal: () => {},
+  onCellChangeMeta: () => {},
   setBoard: () => {},
+  onRestart: () => {},
 })
 
 export const GameProvider = ({ children }: GameProviderProps) => {
@@ -41,6 +56,16 @@ export const GameProvider = ({ children }: GameProviderProps) => {
   const [board, setBoard] = useState<GameContext['board']>([])
   const [minesCords, setMinesCords] = useState<Array<Array<number>>>([])
   const [timer, setTimer] = useState(0)
+
+  const [click] = useSound(clickSfx)
+  const [click1] = useSound(click1Sfx)
+  const [click2] = useSound(click2Sfx)
+  const [click3] = useSound(click3Sfx)
+  const [click4] = useSound(click4Sfx)
+  const [click5] = useSound(click5Sfx)
+  const [flagFlap] = useSound(flagFlapSfx)
+  const [lose] = useSound(loseSfx)
+  const [positiveClick] = useSound(positiveClickSfx)
 
   const valid1DSnapshot = useMemo(
     () => board.flat(1).filter((c) => c.value !== -1),
@@ -51,6 +76,18 @@ export const GameProvider = ({ children }: GameProviderProps) => {
     () =>
       minesCords.length - board.flat(1).filter((c) => c.meta === 'mine').length,
     [minesCords, board],
+  )
+
+  const handleChangeCellMeta: CellClickFn<CellMeta> = useCallback(
+    ([x, y, meta]) => {
+      flagFlap()
+      setBoard(
+        produce((draft) => {
+          draft[x][y].meta = meta
+        }),
+      )
+    },
+    [flagFlap],
   )
 
   const onCellReveal: CellClickFn<number> = useCallback(
@@ -65,8 +102,35 @@ export const GameProvider = ({ children }: GameProviderProps) => {
             })
           }),
         )
-        setGameOver(true)
+        lose()
+        setTimeout(() => setGameOver(true), 1000)
         return
+      }
+
+      switch (value) {
+        case 0:
+          positiveClick()
+          break
+        case 1:
+          click()
+          break
+        case 2:
+          click1()
+          break
+        case 3:
+          click2()
+          break
+        case 4:
+          click3()
+          break
+        case 5:
+          click4()
+          break
+        case 6:
+          click5()
+          break
+        default:
+          break
       }
 
       setBoard(
@@ -98,12 +162,35 @@ export const GameProvider = ({ children }: GameProviderProps) => {
         }),
       )
     },
-    [minesCords],
+    [
+      minesCords,
+      click,
+      click1,
+      click2,
+      click3,
+      click4,
+      click5,
+      positiveClick,
+      lose,
+    ],
   )
+
+  const handleRestart = useCallback(() => {
+    setGameOver(false)
+    setGameStart(true)
+    const { board, minesCords } = generateBoard(8, 10, 10)
+    setBoard(board)
+    setMinesCords(minesCords)
+    setTimer(0)
+  }, [])
 
   useEffect(() => {
     if (gameStart) {
       if (valid1DSnapshot.every((c) => c.revealed)) {
+        const lastHighScore = window.sessionStorage.getItem(HIGHSCORE_KEY) ?? 0
+        if (!lastHighScore || (lastHighScore && timer < +lastHighScore)) {
+          window.sessionStorage.setItem(HIGHSCORE_KEY, timer.toString())
+        }
         setGameOver(true)
       }
     }
@@ -137,7 +224,9 @@ export const GameProvider = ({ children }: GameProviderProps) => {
         gameStart,
         gameOver,
         board,
+        onRestart: handleRestart,
         onCellReveal,
+        onCellChangeMeta: handleChangeCellMeta,
         setBoard,
       }}
     >

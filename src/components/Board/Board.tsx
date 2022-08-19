@@ -1,25 +1,12 @@
 import clsx from 'clsx'
-import { produce } from 'immer'
-import { memo, useCallback } from 'react'
+import { memo } from 'react'
 
 import { useGameContext } from '@/contexts/GameContext'
 
 import { Cell } from '../Cell'
-import { CellClickFn } from '../Cell/Cell'
 
 export default memo(function Board() {
-  const { gameOver, board, setBoard } = useGameContext()
-
-  const handleChangeCellMeta: CellClickFn<CellMeta> = useCallback(
-    ([x, y, meta]) => {
-      setBoard(
-        produce((draft) => {
-          draft[x][y].meta = meta
-        }),
-      )
-    },
-    [],
-  )
+  const { gameOver, board, onCellChangeMeta } = useGameContext()
 
   if (!board.length) return null
 
@@ -37,7 +24,7 @@ export default memo(function Board() {
             key={`${rIdx}_${cIdx}`}
             cords={[rIdx, cIdx]}
             cell={cell}
-            onChangeMeta={handleChangeCellMeta}
+            onChangeMeta={onCellChangeMeta}
           />
         )),
       )}
