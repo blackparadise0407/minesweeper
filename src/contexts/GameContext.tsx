@@ -15,7 +15,7 @@ interface GameContext {
   timer: number
   gameStart: boolean
   gameOver: boolean
-  minesCount: number
+  flagsCount: number
   board: Array<Array<Cell>>
   onCellReveal: CellClickFn<number>
   setBoard: React.Dispatch<React.SetStateAction<GameContext['board']>>
@@ -30,7 +30,7 @@ const GameContext = createContext<GameContext>({
   timer: 0,
   gameOver: false,
   gameStart: false,
-  minesCount: 0,
+  flagsCount: 0,
   onCellReveal: () => {},
   setBoard: () => {},
 })
@@ -41,11 +41,17 @@ export const GameProvider = ({ children }: GameProviderProps) => {
   const [board, setBoard] = useState<GameContext['board']>([])
   const [minesCords, setMinesCords] = useState<Array<Array<number>>>([])
   const [timer, setTimer] = useState(0)
+
   const valid1DSnapshot = useMemo(
     () => board.flat(1).filter((c) => c.value !== -1),
     [board],
   )
-  const minesCount = useMemo(() => minesCords.length, [minesCords])
+
+  const flagsCount = useMemo(
+    () =>
+      minesCords.length - board.flat(1).filter((c) => c.meta === 'mine').length,
+    [minesCords, board],
+  )
 
   const onCellReveal: CellClickFn<number> = useCallback(
     ([x, y, value]) => {
@@ -126,7 +132,7 @@ export const GameProvider = ({ children }: GameProviderProps) => {
   return (
     <GameContext.Provider
       value={{
-        minesCount,
+        flagsCount,
         timer,
         gameStart,
         gameOver,

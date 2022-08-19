@@ -50,7 +50,7 @@ const renderCellMeta = (meta: CellMeta) => {
     case 'mine':
       return <HiFlag className="text-red-500" />
     case 'unsure':
-      return <BsQuestion className="text-green-500" />
+      return <BsQuestion className="text-black" />
     default:
       return null
   }
