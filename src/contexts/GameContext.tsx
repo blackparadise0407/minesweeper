@@ -103,7 +103,7 @@ export const GameProvider = ({ children }: GameProviderProps) => {
           }),
         )
         lose()
-        setTimeout(() => setGameOver(true), 1000)
+        setGameOver(true)
         return
       }
 
@@ -177,7 +177,7 @@ export const GameProvider = ({ children }: GameProviderProps) => {
 
   const handleRestart = useCallback(() => {
     setGameOver(false)
-    setGameStart(true)
+    setGameStart(false)
     const { board, minesCords } = generateBoard(8, 10, 10)
     setBoard(board)
     setMinesCords(minesCords)
