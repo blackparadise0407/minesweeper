@@ -84,11 +84,19 @@ export default memo(function Cell({
 }: CellProps) {
   const { onCellReveal } = useGameContext()
 
-  const onRightClick = (currentMeta: CellMeta) => {
-    const foundIdx = rotations.indexOf(currentMeta)
-    if (foundIdx > -1) {
-      const nextMetaIdx = (foundIdx + 1) % rotations.length
-      onChangeMeta([...cords, rotations[nextMetaIdx]])
+  const onRightClick = () => {
+    if (!cell.revealed) {
+      const foundIdx = rotations.indexOf(cell.meta)
+      if (foundIdx > -1) {
+        const nextMetaIdx = (foundIdx + 1) % rotations.length
+        onChangeMeta([...cords, rotations[nextMetaIdx]])
+      }
+    }
+  }
+
+  const onLeftClick = () => {
+    if (!cell.revealed) {
+      onCellReveal([...cords, cell.value])
     }
   }
 
@@ -100,13 +108,9 @@ export default memo(function Cell({
       )}
       onContextMenu={(e) => {
         e.preventDefault()
-        onRightClick(cell.meta)
+        onRightClick()
       }}
-      onClick={() => {
-        if (!cell.revealed) {
-          onCellReveal([...cords, cell.value])
-        }
-      }}
+      onClick={onLeftClick}
     >
       {cell.revealed && (
         <span className={clsx('font-bold', getCellColorClsx(cell.value))}>
