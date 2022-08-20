@@ -46,7 +46,7 @@ export default memo(function NewGamePanel() {
         animate="animate"
         exit="exit"
       >
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded min-w-[300px] max-w-[300px] space-y-4">
+        <div className="rounded min-w-[300px] max-w-[300px] space-y-4">
           <div className="bg-white rounded p-3 flex justify-evenly">
             <div className="flex flex-col items-center gap-3">
               <FaClock className="text-blue-400 text-3xl" />
