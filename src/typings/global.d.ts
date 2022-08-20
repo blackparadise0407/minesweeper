@@ -8,5 +8,7 @@ declare global {
   }
 
   type Cords = [number, number]
+
+  type Difficulty = 'easy' | 'medium' | 'hard'
 }
 export {}

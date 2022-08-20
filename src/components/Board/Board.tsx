@@ -5,8 +5,21 @@ import { useGameContext } from '@/contexts/GameContext'
 
 import { Cell } from '../Cell'
 
+const getCellSizeFromDiff = (diff: Difficulty) => {
+  switch (diff) {
+    case 'easy':
+      return 40
+    case 'medium':
+      return 35
+    case 'hard':
+      return 30
+    default:
+      return 30
+  }
+}
+
 export default memo(function Board() {
-  const { gameOver, board, onCellChangeMeta } = useGameContext()
+  const { gameOver, board, difficulty, onCellChangeMeta } = useGameContext()
 
   if (!board.length) return null
 
@@ -14,8 +27,12 @@ export default memo(function Board() {
     <div
       className={clsx('grid select-none', gameOver && 'pointer-events-none')}
       style={{
-        gridTemplateRows: `repeat(${board.length}, 40px)`,
-        gridTemplateColumns: `repeat(${board[0].length}, 40px)`,
+        gridTemplateRows: `repeat(${board.length}, ${getCellSizeFromDiff(
+          difficulty,
+        )}px)`,
+        gridTemplateColumns: `repeat(${board[0].length}, ${getCellSizeFromDiff(
+          difficulty,
+        )}px)`,
       }}
     >
       {board.map((row, rIdx) =>

@@ -5,7 +5,7 @@ import { BsTrophyFill } from 'react-icons/bs'
 import { FaClock } from 'react-icons/fa'
 
 import bgSfx from '@/assets/sounds/bg.mp3?url'
-import { HIGHSCORE_KEY, useGameContext } from '@/contexts/GameContext'
+import { useGameContext } from '@/contexts/GameContext'
 
 const variants: Variants = {
   initial: {
@@ -22,11 +22,12 @@ const variants: Variants = {
 }
 
 export default memo(function NewGamePanel() {
-  const { timer, onRestart } = useGameContext()
+  const { timer, highScore, volume, restart } = useGameContext()
 
   useEffect(() => {
     const bgm = new Audio(bgSfx)
     const playPromise = bgm.play()
+    bgm.volume = volume
 
     return () => {
       if (playPromise !== undefined) {
@@ -38,7 +39,7 @@ export default memo(function NewGamePanel() {
   }, [])
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen grid place-content-center bg-black bg-opacity-30">
+    <div className="fixed top-0 left-0 w-screen h-screen grid place-content-center bg-black bg-opacity-30 z-[999]">
       <motion.div
         variants={variants}
         initial="initial"
@@ -56,13 +57,13 @@ export default memo(function NewGamePanel() {
             <div className="flex flex-col items-center gap-3">
               <BsTrophyFill className="text-yellow-400 text-3xl" />
               <span className="text-lg font-bold">
-                {window.sessionStorage.getItem(HIGHSCORE_KEY)?.padStart(3, '0')}
+                {String(highScore).padStart(3, '0')}
               </span>
             </div>
           </div>
           <button
             className="w-full p-2 rounded flex items-center gap-2 justify-center bg-green-500 text-white"
-            onClick={onRestart}
+            onClick={restart}
           >
             <AiOutlineReload className="text-xl" />
             <span className="font-medium text-lg">Play again</span>
