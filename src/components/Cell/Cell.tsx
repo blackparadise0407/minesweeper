@@ -95,7 +95,7 @@ export default memo(function Cell({
   }
 
   const onLeftClick = () => {
-    if (!cell.revealed) {
+    if (!cell.revealed && !cell.meta) {
       onCellReveal([...cords, cell.value])
     }
   }
