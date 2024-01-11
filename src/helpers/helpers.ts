@@ -9,6 +9,13 @@ export const neighbours = [
   [1, 1],
 ]
 
+export const adjacentNeighbours = [
+  [0, 1],
+  [0, -1],
+  [-1, 0],
+  [1, 0],
+]
+
 export const generateBoard = (
   height: number,
   width: number,

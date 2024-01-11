@@ -114,6 +114,19 @@ export const GameProvider = ({ children }: GameProviderProps) => {
     [board],
   )
 
+  const soundFxMap = useMemo(
+    () => ({
+      0: positiveClick,
+      1: click,
+      2: click1,
+      3: click2,
+      4: click3,
+      5: click4,
+      6: click5,
+    }),
+    [positiveClick, click, click1, click2, click3, click4, click5],
+  )
+
   const flagsCount = useMemo(
     () =>
       minesCords.length - board.flat(1).filter((c) => c.meta === 'mine').length,
@@ -149,30 +162,10 @@ export const GameProvider = ({ children }: GameProviderProps) => {
         return
       }
 
-      switch (value) {
-        case 0:
-          positiveClick()
-          break
-        case 1:
-          click()
-          break
-        case 2:
-          click1()
-          break
-        case 3:
-          click2()
-          break
-        case 4:
-          click3()
-          break
-        case 5:
-          click4()
-          break
-        case 6:
-          click5()
-          break
-        default:
-          break
+      const playFn = soundFxMap[value as keyof typeof soundFxMap]
+
+      if (playFn) {
+        playFn()
       }
 
       setBoard(
@@ -187,13 +180,12 @@ export const GameProvider = ({ children }: GameProviderProps) => {
           draft[x][y].revealed = true
 
           while (queue.length) {
-            const [qX, qY] = queue[0]
-            queue.shift()
+            const [qX, qY] = queue.shift()!
             neighbours.forEach(([nX, nY]) => {
               if (typeof draft?.[nX + qX]?.[nY + qY] !== 'undefined') {
                 if (
                   draft[nX + qX][nY + qY].value === 0 &&
-                  !draft[nX + qX][nY + qY].revealed === true
+                  !draft[nX + qX][nY + qY].revealed
                 ) {
                   queue.push([nX + qX, nY + qY])
                 }

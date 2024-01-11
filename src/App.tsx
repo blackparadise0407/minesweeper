@@ -1,10 +1,10 @@
 import { AnimatePresence } from 'framer-motion'
-import { Fragment, memo } from 'react'
+import { Fragment } from 'react'
 
 import { Board, ControlPanel, NewGamePanel } from './components'
 import { useGameContext } from './contexts/GameContext'
 
-export default memo(function App() {
+export default function App() {
   const { gameOver } = useGameContext()
 
   return (
@@ -18,4 +18,4 @@ export default memo(function App() {
       </AnimatePresence>
     </Fragment>
   )
-})
+}
